@@ -2,7 +2,7 @@ import {
   Navbar,
   Hero,
   // Trusted,
-  // Features,
+  Features,
 } from "@/components/marketing";
 
 export default function Home() {
@@ -10,6 +10,7 @@ export default function Home() {
     <main className="min-h-screen bg-background">
       <Navbar />
        <Hero />
+       <Features />
      
     </main>
   );
