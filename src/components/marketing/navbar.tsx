@@ -1,0 +1,87 @@
+"use client";
+
+import Link from "next/link";
+import { Menu, Dumbbell } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+
+const navigation = [
+  { name: "Features", href: "#features" },
+  { name: "Pricing", href: "#pricing" },
+  { name: "FAQ", href: "#faq" },
+];
+
+export default function Navbar() {
+  return (
+    <header className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2">
+          <div className="rounded-xl bg-primary p-2 text-primary-foreground">
+            <Dumbbell className="h-5 w-5" />
+          </div>
+
+          <span className="text-xl font-bold tracking-tight">
+            GymSphere
+          </span>
+        </Link>
+
+        {/* Desktop Navigation */}
+        <nav className="hidden items-center gap-8 md:flex">
+          {navigation.map((item) => (
+            <Link
+              key={item.name}
+              href={item.href}
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {item.name}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Desktop Buttons */}
+        <div className="hidden items-center gap-3 md:flex">
+          <Button variant="ghost">Login</Button>
+
+          <Button>Get Started</Button>
+        </div>
+
+        {/* Mobile */}
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
+
+          <SheetContent side="right">
+            <div className="mt-10 flex flex-col gap-6">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="text-lg font-medium"
+                >
+                  {item.name}
+                </Link>
+              ))}
+
+              <Button variant="outline">
+                Login
+              </Button>
+
+              <Button>
+                Get Started
+              </Button>
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+    </header>
+  );
+}
