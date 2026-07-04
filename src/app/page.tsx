@@ -1,17 +1,22 @@
 import {
-  Navbar,
-  Hero,
-  // Trusted,
+  DashboardPreview,
   Features,
+  Hero,
+  Navbar,
 } from "@/components/marketing";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen">
+
       <Navbar />
-       <Hero />
-       <Features />
-     
+
+      <Hero />
+
+      <Features />
+
+      <DashboardPreview />
+
     </main>
   );
 }
