@@ -1,16 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, Dumbbell } from "lucide-react";
+import { Dumbbell, Menu } from "lucide-react";
+
+import { siteConfig } from "@/config/site";
 
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-
-const navigation = [
-  { name: "Features", href: "#features" },
-  { name: "Pricing", href: "#pricing" },
-  { name: "FAQ", href: "#faq" },
-];
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 export default function Navbar() {
   return (
@@ -23,19 +23,19 @@ export default function Navbar() {
           </div>
 
           <span className="text-xl font-bold tracking-tight">
-            GymSphere
+            {siteConfig.name}
           </span>
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-8 md:flex">
-          {navigation.map((item) => (
+          {siteConfig.navigation.map((item) => (
             <Link
-              key={item.name}
+              key={item.title}
               href={item.href}
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              {item.name}
+              {item.title}
             </Link>
           ))}
         </nav>
@@ -47,7 +47,7 @@ export default function Navbar() {
           <Button>Get Started</Button>
         </div>
 
-        {/* Mobile */}
+        {/* Mobile Menu */}
         <Sheet>
           <SheetTrigger asChild>
             <Button
@@ -61,13 +61,13 @@ export default function Navbar() {
 
           <SheetContent side="right">
             <div className="mt-10 flex flex-col gap-6">
-              {navigation.map((item) => (
+              {siteConfig.navigation.map((item) => (
                 <Link
-                  key={item.name}
+                  key={item.title}
                   href={item.href}
                   className="text-lg font-medium"
                 >
-                  {item.name}
+                  {item.title}
                 </Link>
               ))}
 
