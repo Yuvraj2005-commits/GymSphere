@@ -7,3 +7,145 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
+
+enum UserRole {
+  OWNER
+  ADMIN
+  TRAINER
+  RECEPTIONIST
+  MEMBER
+}
+
+enum MemberStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  EXPIRED
+}
+
+model Gym {
+  id   String @id @default(cuid())
+  name String
+  slug String @unique
+
+  email   String?
+  phone   String?
+  address String?
+  logo    String?
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users           User[]
+  trainers        Trainer[]
+  members         Member[]
+  membershipPlans MembershipPlan[]
+
+  @@index([slug])
+}
+
+model User {
+  id String @id @default(cuid())
+
+  gymId String
+  gym   Gym    @relation(fields: [gymId], references: [id], onDelete: Cascade)
+
+  firstName String
+  lastName  String
+
+  email         String    @unique
+  password      String?
+  image         String?
+  emailVerified DateTime?
+
+  role UserRole @default(MEMBER)
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([gymId])
+}
+
+model Trainer {
+  id String @id @default(cuid())
+
+  gymId String
+  gym   Gym    @relation(fields: [gymId], references: [id], onDelete: Cascade)
+
+  firstName String
+  lastName  String
+
+  email String?
+  phone String?
+  image String?
+
+  specialization String?
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([gymId])
+}
+
+model MembershipPlan {
+  id String @id @default(cuid())
+
+  gymId String
+  gym   Gym    @relation(fields: [gymId], references: [id], onDelete: Cascade)
+
+  name        String
+  description String?
+
+  durationDays Int
+
+  price Decimal @db.Decimal(10, 2)
+
+  isActive Boolean @default(true)
+
+  members Member[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([gymId])
+}
+
+model Member {
+  id String @id @default(cuid())
+
+  gymId String
+  gym   Gym    @relation(fields: [gymId], references: [id], onDelete: Cascade)
+
+  membershipPlanId String
+  membershipPlan   MembershipPlan @relation(fields: [membershipPlanId], references: [id])
+
+  firstName String
+  lastName  String
+
+  email String?
+  phone String?
+
+  image String?
+
+  emergencyContactName  String?
+  emergencyContactPhone String?
+
+  height Float?
+  weight Float?
+
+  status MemberStatus @default(ACTIVE)
+
+  joinedAt DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([gymId])
+  @@index([membershipPlanId])
+}
