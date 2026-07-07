@@ -1,64 +1,42 @@
-"use client";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
 
-import { useForm } from "react-hook-form";
+import MemberFormClient from "./member-form-client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
+export default async function MemberForm() {
+  const session = await auth();
 
-import {
-  MemberInput,
-  MemberSchema,
-} from "@/lib/validations/member";
-
-import { createMember } from "@/actions/member";
-
-import { Input } from "@/components/ui/input";
-
-import { Button } from "@/components/ui/button";
-
-export default function MemberForm() {
-  const form = useForm<MemberInput>({
-    resolver: zodResolver(MemberSchema),
-  });
-
-  async function onSubmit(values: MemberInput) {
-    await createMember(values);
-
-    form.reset();
+  if (!session?.user?.email) {
+    redirect("/login");
   }
 
-  return (
-    <form
-      onSubmit={form.handleSubmit(onSubmit)}
-      className="space-y-5 max-w-xl"
-    >
-      <Input
-        placeholder="First Name"
-        {...form.register("firstName")}
-      />
+  const user = await prisma.user.findUnique({
+    where: {
+      email: session.user.email,
+    },
+    include: {
+      owner: true,
+    },
+  });
 
-      <Input
-        placeholder="Last Name"
-        {...form.register("lastName")}
-      />
+  if (!user?.owner) {
+    redirect("/dashboard/onboarding");
+  }
 
-      <Input
-        placeholder="Email"
-        {...form.register("email")}
-      />
+  const plans = (
+    await prisma.membershipPlan.findMany({
+      where: {
+        gymId: user.owner.gymId,
+      },
+      orderBy: {
+        name: "asc",
+      },
+    })
+  ).map((plan) => ({
+    id: plan.id,
+    name: plan.name,
+  }));
 
-      <Input
-        placeholder="Phone"
-        {...form.register("phone")}
-      />
-
-      <Input
-        placeholder="Membership Plan ID"
-        {...form.register("membershipPlanId")}
-      />
-
-      <Button type="submit">
-        Save Member
-      </Button>
-    </form>
-  );
+  return <MemberFormClient plans={plans} mode="create" />;
 }

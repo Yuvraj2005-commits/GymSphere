@@ -1,92 +1,33 @@
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
+import Link from "next/link";
 
-import {
-  Users,
-  Wallet,
-  UserCog,
-  Activity,
-} from "lucide-react";
+import MemberTable from "@/components/members/member-table";
+import MemberSearch from "@/components/members/member-search";
 
-import StatsCard from "@/components/dashboard/stats-card";
-import RevenueChart from "@/components/dashboard/revenue-chart";
-import RecentMembers from "@/components/dashboard/recent-members";
-import AIInsights from "@/components/dashboard/ai-insights";
-import QuickActions from "@/components/dashboard/quick-actions";
-
-export default async function DashboardPage() {
-  const session = await auth();
-
-  if (!session?.user?.email) {
-    redirect("/login");
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session.user.email,
-    },
-    include: {
-      owner: true,
-    },
-  });
-
-  if (!user?.owner) {
-    redirect("/dashboard/onboarding");
-  }
-
+export default function MembersPage() {
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-4xl font-bold">
-          Welcome back, {session.user.name} 👋
-        </h1>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-4xl font-bold">
+            Members
+          </h1>
 
-        <p className="text-muted-foreground">
-          Manage your gym from one powerful dashboard.
-        </p>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        <StatsCard
-          title="Revenue"
-          value="₹1,24,500"
-          change="+18%"
-          icon={Wallet}
-        />
-
-        <StatsCard
-          title="Members"
-          value="245"
-          change="+12"
-          icon={Users}
-        />
-
-        <StatsCard
-          title="Trainers"
-          value="14"
-          change="+2"
-          icon={UserCog}
-        />
-
-        <StatsCard
-          title="Attendance"
-          value="89%"
-          change="+5%"
-          icon={Activity}
-        />
-      </div>
-
-      <RevenueChart />
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <RecentMembers />
-
-        <div className="space-y-6">
-          <AIInsights />
-          <QuickActions />
+          <p className="text-muted-foreground">
+            Manage all gym members.
+          </p>
         </div>
+
+        <Link
+          href="/dashboard/members/new"
+          className="rounded-xl bg-primary px-5 py-3 text-primary-foreground"
+        >
+          + Add Member
+        </Link>
       </div>
+
+      <MemberSearch />
+
+      <MemberTable />
     </div>
   );
 }
