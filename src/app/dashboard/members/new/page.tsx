@@ -1,13 +1,19 @@
+import MemberForm from "@/components/members/member-form";
+
 export default function NewMemberPage() {
   return (
-    <div>
-      <h1 className="text-3xl font-bold">
-        Add New Member
-      </h1>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-4xl font-bold">
+          Add Member
+        </h1>
 
-      <p className="mt-2 text-muted-foreground">
-        Member form will be added here.
-      </p>
+        <p className="text-muted-foreground">
+          Create a new gym member.
+        </p>
+      </div>
+
+      <MemberForm />
     </div>
   );
 }

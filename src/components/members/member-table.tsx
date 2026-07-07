@@ -1,33 +1,15 @@
-import MemberCard from "./member-card";
+import { prisma } from "@/lib/prisma";
 
-const members = [
-  {
-    id: 1,
-    name: "Rahul Sharma",
-    email: "rahul@gmail.com",
-    phone: "9876543210",
-    plan: "Premium",
-    status: "Active",
-  },
-  {
-    id: 2,
-    name: "Priya Singh",
-    email: "priya@gmail.com",
-    phone: "9123456780",
-    plan: "Gold",
-    status: "Active",
-  },
-  {
-    id: 3,
-    name: "Aman Kumar",
-    email: "aman@gmail.com",
-    phone: "9988776655",
-    plan: "Monthly",
-    status: "Expired",
-  },
-];
+export default async function MemberTable() {
+  const members = await prisma.member.findMany({
+    include: {
+      membershipPlan: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
-export default function MemberTable() {
   return (
     <div className="overflow-hidden rounded-2xl border">
       <table className="w-full">
@@ -38,16 +20,32 @@ export default function MemberTable() {
             <th className="px-6 py-4 text-left">Phone</th>
             <th className="px-6 py-4 text-left">Plan</th>
             <th className="px-6 py-4 text-left">Status</th>
-            <th className="px-6 py-4 text-center">Action</th>
           </tr>
         </thead>
 
         <tbody>
           {members.map((member) => (
-            <MemberCard
-              key={member.id}
-              member={member}
-            />
+            <tr key={member.id} className="border-t">
+              <td className="px-6 py-4">
+                {member.firstName} {member.lastName}
+              </td>
+
+              <td className="px-6 py-4">
+                {member.email}
+              </td>
+
+              <td className="px-6 py-4">
+                {member.phone}
+              </td>
+
+              <td className="px-6 py-4">
+                {member.membershipPlan.name}
+              </td>
+
+              <td className="px-6 py-4">
+                {member.status}
+              </td>
+            </tr>
           ))}
         </tbody>
       </table>
