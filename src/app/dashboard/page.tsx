@@ -1,32 +1,70 @@
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import {
+  Users,
+  Wallet,
+  UserCog,
+  Activity,
+} from "lucide-react";
 
-export default async function DashboardPage() {
-  const session = await auth();
+import StatsCard from "@/components/dashboard/stats-card";
+import RevenueChart from "@/components/dashboard/revenue-chart";
+import RecentMembers from "@/components/dashboard/recent-members";
+import AIInsights from "@/components/dashboard/ai-insights";
+import QuickActions from "@/components/dashboard/quick-actions";
 
-  if (!session) {
-    redirect("/login");
-  }
-
+export default function DashboardPage() {
   return (
-    <main className="p-10">
-      <h1 className="text-4xl font-bold">
-        Welcome to GymSphere 🚀
-      </h1>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-4xl font-bold">
+          Welcome back 👋
+        </h1>
 
-      <div className="mt-8 rounded-xl border p-6">
-        <h2 className="text-xl font-semibold">
-          Logged in successfully
-        </h2>
-
-        <p className="mt-4">
-          <strong>Name:</strong> {session.user?.name}
-        </p>
-
-        <p>
-          <strong>Email:</strong> {session.user?.email}
+        <p className="text-muted-foreground">
+          Manage your gym from one powerful dashboard.
         </p>
       </div>
-    </main>
+
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <StatsCard
+          title="Revenue"
+          value="₹1,24,500"
+          change="+18%"
+          icon={Wallet}
+        />
+
+        <StatsCard
+          title="Members"
+          value="245"
+          change="+12"
+          icon={Users}
+        />
+
+        <StatsCard
+          title="Trainers"
+          value="14"
+          change="+2"
+          icon={UserCog}
+        />
+
+        <StatsCard
+          title="Attendance"
+          value="89%"
+          change="+5%"
+          icon={Activity}
+        />
+      </div>
+
+      <RevenueChart />
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <RecentMembers />
+
+        <div className="space-y-6">
+          <AIInsights />
+
+          <QuickActions />
+        </div>
+      </div>
+    </div>
   );
 }

@@ -1,18 +1,10 @@
-import { LucideIcon } from "lucide-react";
-
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { ArrowUpRight, LucideIcon } from "lucide-react";
 
 interface StatsCardProps {
   title: string;
   value: string;
   change: string;
   icon: LucideIcon;
-  positive?: boolean;
 }
 
 export default function StatsCard({
@@ -20,31 +12,27 @@ export default function StatsCard({
   value,
   change,
   icon: Icon,
-  positive = true,
 }: StatsCardProps) {
   return (
-    <Card className="transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
-          {title}
-        </CardTitle>
-
-        <div className="rounded-xl bg-primary/10 p-2">
-          <Icon className="h-5 w-5 text-primary" />
+    <div className="rounded-3xl border bg-background p-6 shadow-sm transition-all hover:shadow-xl hover:-translate-y-1">
+      <div className="flex items-center justify-between">
+        <div className="rounded-2xl bg-primary/10 p-3">
+          <Icon className="h-6 w-6 text-primary" />
         </div>
-      </CardHeader>
 
-      <CardContent>
-        <div className="text-3xl font-bold">{value}</div>
-
-        <p
-          className={`mt-2 text-sm ${
-            positive ? "text-green-500" : "text-red-500"
-          }`}
-        >
+        <div className="flex items-center gap-1 text-green-600 text-sm font-medium">
+          <ArrowUpRight className="h-4 w-4" />
           {change}
-        </p>
-      </CardContent>
-    </Card>
+        </div>
+      </div>
+
+      <h3 className="mt-5 text-muted-foreground">
+        {title}
+      </h3>
+
+      <p className="mt-2 text-4xl font-bold">
+        {value}
+      </p>
+    </div>
   );
 }

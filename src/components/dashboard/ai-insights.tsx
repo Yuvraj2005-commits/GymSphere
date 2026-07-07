@@ -1,57 +1,25 @@
-import { Brain, TrendingUp, Users, CalendarClock } from "lucide-react";
-
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
-const insights = [
-  {
-    icon: TrendingUp,
-    text: "Revenue increased by 18% this month.",
-  },
-  {
-    icon: Users,
-    text: "12 memberships expire within 7 days.",
-  },
-  {
-    icon: CalendarClock,
-    text: "Peak gym traffic is between 6 PM and 8 PM.",
-  },
-];
+import { Sparkles } from "lucide-react";
 
 export default function AIInsights() {
   return (
-    <Card className="h-full">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Brain className="h-5 w-5 text-primary" />
+    <div className="rounded-3xl border bg-gradient-to-br from-primary to-blue-700 p-6 text-white shadow-xl">
+      <div className="flex items-center gap-3">
+        <Sparkles className="h-6 w-6" />
+
+        <h2 className="text-xl font-bold">
           AI Insights
-        </CardTitle>
-      </CardHeader>
+        </h2>
+      </div>
 
-      <CardContent className="space-y-5">
-        {insights.map((insight) => {
-          const Icon = insight.icon;
+      <ul className="mt-6 space-y-4 text-sm">
+        <li>📈 Revenue increased by 18% this month.</li>
 
-          return (
-            <div
-              key={insight.text}
-              className="flex items-start gap-4 rounded-xl border p-4 transition-colors hover:bg-muted/50"
-            >
-              <div className="rounded-lg bg-primary/10 p-2">
-                <Icon className="h-5 w-5 text-primary" />
-              </div>
+        <li>👥 12 memberships expire this week.</li>
 
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                {insight.text}
-              </p>
-            </div>
-          );
-        })}
-      </CardContent>
-    </Card>
+        <li>🏋 Peak attendance is between 6–8 PM.</li>
+
+        <li>💰 Premium plan sales are growing fastest.</li>
+      </ul>
+    </div>
   );
 }
