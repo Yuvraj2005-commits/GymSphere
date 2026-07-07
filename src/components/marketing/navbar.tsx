@@ -6,11 +6,7 @@ import { Dumbbell, Menu } from "lucide-react";
 import { siteConfig } from "@/config/site";
 
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export default function Navbar() {
   return (
@@ -50,11 +46,7 @@ export default function Navbar() {
         {/* Mobile Menu */}
         <Sheet>
           <SheetTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
-            >
+            <Button variant="ghost" size="icon" className="md:hidden">
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
@@ -71,12 +63,12 @@ export default function Navbar() {
                 </Link>
               ))}
 
-              <Button variant="outline">
-                Login
+              <Button asChild variant="ghost">
+                <Link href="/login">Login</Link>
               </Button>
 
-              <Button>
-                Get Started
+              <Button asChild>
+                <Link href="/login">Get Started</Link>
               </Button>
             </div>
           </SheetContent>
