@@ -140,6 +140,7 @@ model Member {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  attendance Attendance[]
 
   @@index([gymId])
   @@index([membershipPlanId])
@@ -184,4 +185,19 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+model Attendance {
+  id String @id @default(cuid())
+
+  memberId String
+  member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  checkIn DateTime
+
+  checkOut DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([memberId])
+@@index([checkIn])
 }
