@@ -1,8 +1,21 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
+
 import PaymentTable from "@/components/payments/payment-table";
 import PaymentStats from "@/components/payments/payment-stats";
-export default function PaymentsPage() {
+import PaymentSearch from "@/components/payments/payment-search";
+
+interface PaymentsPageProps {
+  searchParams: Promise<{
+    search?: string;
+  }>;
+}
+
+export default async function PaymentsPage({
+  searchParams,
+}: PaymentsPageProps) {
+  const { search = "" } = await searchParams;
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -26,8 +39,10 @@ export default function PaymentsPage() {
       </div>
 
       <PaymentStats />
-      
-      <PaymentTable />
+
+      <PaymentSearch />
+
+      <PaymentTable search={search} />
     </div>
   );
 }

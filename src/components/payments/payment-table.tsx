@@ -1,7 +1,33 @@
 import { prisma } from "@/lib/prisma";
 
-export default async function PaymentTable() {
+interface PaymentTableProps {
+  search?: string;
+}
+
+export default async function PaymentTable({
+  search = "",
+}: PaymentTableProps) {
   const payments = await prisma.payment.findMany({
+    where: search
+      ? {
+          member: {
+            OR: [
+              {
+                firstName: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+              {
+                lastName: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+            ],
+          },
+        }
+      : {},
     include: {
       member: true,
     },
