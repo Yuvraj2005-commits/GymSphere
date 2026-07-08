@@ -3,7 +3,15 @@ import { prisma } from "@/lib/prisma";
 import AttendanceRow from "./attendance-row";
 
 export default async function AttendanceTable() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   const attendance = await prisma.attendance.findMany({
+    where: {
+      checkIn: {
+        gte: today,
+      },
+    },
     include: {
       member: true,
     },
@@ -15,9 +23,7 @@ export default async function AttendanceTable() {
   if (attendance.length === 0) {
     return (
       <div className="rounded-xl border p-12 text-center">
-        <h2 className="text-xl font-semibold">
-          No Attendance Yet
-        </h2>
+        <h2 className="text-xl font-semibold">No Attendance Yet</h2>
 
         <p className="mt-2 text-muted-foreground">
           Members who check in today will appear here.
@@ -40,10 +46,7 @@ export default async function AttendanceTable() {
 
         <tbody>
           {attendance.map((record) => (
-            <AttendanceRow
-              key={record.id}
-              attendance={record}
-            />
+            <AttendanceRow key={record.id} attendance={record} />
           ))}
         </tbody>
       </table>
