@@ -1,4 +1,5 @@
 import AttendanceTable from "@/components/attendance/attendance-table";
+import MemberCheckinList from "@/components/attendance/member-checkin-list";
 
 export default function AttendancePage() {
   return (
@@ -12,7 +13,7 @@ export default function AttendancePage() {
           Manage daily attendance.
         </p>
       </div>
-
+      <MemberCheckinList />
       <AttendanceTable />
     </div>
   );
