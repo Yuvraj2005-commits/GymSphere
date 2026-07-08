@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import PaymentTable from "@/components/payments/payment-table";
+import PaymentStats from "@/components/payments/payment-stats";
 export default function PaymentsPage() {
   return (
     <div className="space-y-8">
@@ -24,6 +25,8 @@ export default function PaymentsPage() {
         </Link>
       </div>
 
+      <PaymentStats />
+      
       <PaymentTable />
     </div>
   );
