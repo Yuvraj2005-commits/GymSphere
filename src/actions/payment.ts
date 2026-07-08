@@ -38,3 +38,16 @@ export async function createPayment(
     success: true,
   };
 }
+export async function deletePayment(id: string) {
+  await prisma.payment.delete({
+    where: {
+      id,
+    },
+  });
+
+  revalidatePath("/dashboard/payments");
+
+  return {
+    success: true,
+  };
+}

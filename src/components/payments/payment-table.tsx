@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import DeletePaymentDialog from "./delete-payment-dialog";
 
 interface PaymentTableProps {
   search?: string;
@@ -51,7 +52,7 @@ export default async function PaymentTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border bg-background">
+    <div className="overflow-hidden rounded-xl border bg-background shadow-sm">
       <table className="w-full">
         <thead className="border-b bg-muted/50">
           <tr>
@@ -59,17 +60,22 @@ export default async function PaymentTable({
             <th className="px-6 py-4 text-left">Amount</th>
             <th className="px-6 py-4 text-left">Method</th>
             <th className="px-6 py-4 text-left">Date</th>
+            <th className="px-6 py-4 text-center">Actions</th>
           </tr>
         </thead>
 
         <tbody>
           {payments.map((payment) => (
-            <tr key={payment.id} className="border-b">
-              <td className="px-6 py-4">
-                {payment.member.firstName} {payment.member.lastName}
+            <tr
+              key={payment.id}
+              className="border-b hover:bg-muted/30"
+            >
+              <td className="px-6 py-4 font-medium">
+                {payment.member.firstName}{" "}
+                {payment.member.lastName}
               </td>
 
-              <td className="px-6 py-4">
+              <td className="px-6 py-4 font-semibold text-green-600">
                 ₹{Number(payment.amount).toLocaleString()}
               </td>
 
@@ -79,6 +85,12 @@ export default async function PaymentTable({
 
               <td className="px-6 py-4">
                 {payment.paymentDate.toLocaleDateString()}
+              </td>
+
+              <td className="px-6 py-4 text-center">
+                <DeletePaymentDialog
+                  paymentId={payment.id}
+                />
               </td>
             </tr>
           ))}
