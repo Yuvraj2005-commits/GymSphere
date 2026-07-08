@@ -32,3 +32,19 @@ export async function checkIn(memberId: string) {
     success: true,
   };
 }
+export async function checkOut(attendanceId: string) {
+  await prisma.attendance.update({
+    where: {
+      id: attendanceId,
+    },
+    data: {
+      checkOut: new Date(),
+    },
+  });
+
+  revalidatePath("/dashboard/attendance");
+
+  return {
+    success: true,
+  };
+}
