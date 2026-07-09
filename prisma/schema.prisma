@@ -111,14 +111,13 @@ model Member {
   id String @id @default(cuid())
 
   gymId String
-  gym   Gym    @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  gym   Gym @relation(fields: [gymId], references: [id], onDelete: Cascade)
 
   membershipPlanId String
   membershipPlan   MembershipPlan @relation(fields: [membershipPlanId], references: [id])
 
-  // Optional login account (future member portal)
   userId String? @unique
-  user   User?   @relation(fields: [userId], references: [id])
+  user   User? @relation(fields: [userId], references: [id])
 
   firstName String
   lastName  String
@@ -138,10 +137,16 @@ model Member {
 
   joinedAt DateTime @default(now())
 
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  // NEW
+  membershipStart DateTime ? @default(now())
+  membershipEnd   DateTime ?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   attendance Attendance[]
-  payments   Payment[]
+  payments Payment[]
+
 
   @@index([gymId])
   @@index([membershipPlanId])

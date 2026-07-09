@@ -5,6 +5,7 @@ import { Pencil } from "lucide-react";
 
 import MemberStatusBadge from "./member-status-badge";
 import DeleteMemberDialog from "./delete-member-dialog";
+import MemberExpiryBadge from "./member-expiry-badge";
 
 interface MemberRowProps {
   member: {
@@ -13,17 +14,21 @@ interface MemberRowProps {
     lastName: string;
     email: string | null;
     phone: string | null;
+
     status: string;
+
     joinedAt: Date;
+
+    membershipStart: Date | null;
+    membershipEnd: Date | null;
+
     membershipPlan: {
       name: string;
     };
   };
 }
 
-export default function MemberRow({
-  member,
-}: MemberRowProps) {
+export default function MemberRow({ member }: MemberRowProps) {
   return (
     <tr className="border-b transition-colors hover:bg-muted/30">
       {/* Name */}
@@ -46,14 +51,10 @@ export default function MemberRow({
       </td>
 
       {/* Email */}
-      <td className="px-6 py-5">
-        {member.email || "-"}
-      </td>
+      <td className="px-6 py-5">{member.email || "-"}</td>
 
       {/* Phone */}
-      <td className="px-6 py-5">
-        {member.phone || "-"}
-      </td>
+      <td className="px-6 py-5">{member.phone || "-"}</td>
 
       {/* Plan */}
       <td className="px-6 py-5">
@@ -61,19 +62,18 @@ export default function MemberRow({
           {member.membershipPlan.name}
         </span>
       </td>
+      <td className="px-6 py-5">
+        <MemberExpiryBadge membershipEnd={member.membershipEnd} />
+      </td>
 
       {/* Status */}
       <td className="px-6 py-5">
-        <MemberStatusBadge
-          status={member.status}
-        />
+        <MemberStatusBadge status={member.status} />
       </td>
 
       {/* Joined */}
       <td className="px-6 py-5">
-        {new Date(
-          member.joinedAt
-        ).toLocaleDateString()}
+        {new Date(member.joinedAt).toLocaleDateString()}
       </td>
 
       {/* Actions */}
@@ -86,9 +86,7 @@ export default function MemberRow({
             <Pencil className="h-4 w-4" />
           </Link>
 
-          <DeleteMemberDialog
-            memberId={member.id}
-          />
+          <DeleteMemberDialog memberId={member.id} />
         </div>
       </td>
     </tr>

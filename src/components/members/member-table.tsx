@@ -25,37 +25,40 @@ export default async function MemberTable() {
   }
 
   const members = (
-  await prisma.member.findMany({
-    where: {
-      gymId: user.owner.gymId,
+    await prisma.member.findMany({
+      where: {
+        gymId: user.owner.gymId,
+      },
+      include: {
+        membershipPlan: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    })
+  ).map((member) => ({
+    id: member.id,
+    firstName: member.firstName,
+    lastName: member.lastName,
+    email: member.email,
+    phone: member.phone,
+    status: member.status,
+
+    joinedAt: member.joinedAt,
+
+    membershipStart: member.membershipStart,
+    membershipEnd: member.membershipEnd,
+
+    membershipPlan: {
+      id: member.membershipPlan.id,
+      name: member.membershipPlan.name,
     },
-    include: {
-      membershipPlan: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  })
-).map((member) => ({
-  id: member.id,
-  firstName: member.firstName,
-  lastName: member.lastName,
-  email: member.email,
-  phone: member.phone,
-  status: member.status,
-  joinedAt: member.joinedAt,
-  membershipPlan: {
-    id: member.membershipPlan.id,
-    name: member.membershipPlan.name,
-  },
-}));
+  }));
 
   if (members.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed p-16 text-center">
-        <h2 className="text-2xl font-bold">
-          No Members Yet
-        </h2>
+        <h2 className="text-2xl font-bold">No Members Yet</h2>
 
         <p className="mt-2 text-muted-foreground">
           Add your first gym member to get started.
@@ -73,17 +76,11 @@ export default async function MemberTable() {
               Member
             </th>
 
-            <th className="px-6 py-4 text-left text-sm font-semibold">
-              Email
-            </th>
+            <th className="px-6 py-4 text-left text-sm font-semibold">Email</th>
 
-            <th className="px-6 py-4 text-left text-sm font-semibold">
-              Phone
-            </th>
+            <th className="px-6 py-4 text-left text-sm font-semibold">Phone</th>
 
-            <th className="px-6 py-4 text-left text-sm font-semibold">
-              Plan
-            </th>
+            <th className="px-6 py-4 text-left text-sm font-semibold">Plan</th>
 
             <th className="px-6 py-4 text-left text-sm font-semibold">
               Status
@@ -96,15 +93,15 @@ export default async function MemberTable() {
             <th className="px-6 py-4 text-center text-sm font-semibold">
               Actions
             </th>
+            <th className="px-6 py-4 text-left text-sm font-semibold">
+              Expires
+            </th>
           </tr>
         </thead>
 
         <tbody>
           {members.map((member) => (
-            <MemberRow
-              key={member.id}
-              member={member}
-            />
+            <MemberRow key={member.id} member={member} />
           ))}
         </tbody>
       </table>

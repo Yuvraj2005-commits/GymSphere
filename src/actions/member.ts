@@ -4,10 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
-import {
-  MemberInput,
-  MemberSchema,
-} from "@/lib/validations/member";
+import { MemberInput, MemberSchema } from "@/lib/validations/member";
 
 export async function createMember(data: MemberInput) {
   const session = await auth();
@@ -43,12 +40,35 @@ export async function createMember(data: MemberInput) {
       message: "Owner not found",
     };
   }
+  const plan = await prisma.membershipPlan.findUnique({
+    where: {
+      id: parsed.data.membershipPlanId,
+    },
+  });
+
+  if (!plan) {
+    throw new Error("Membership plan not found");
+  }
+
+  const membershipStart = new Date();
+
+  const membershipEnd = new Date(membershipStart);
+
+  membershipEnd.setDate(membershipEnd.getDate() + plan.durationDays);
+  console.log({
+  durationDays: plan.durationDays,
+  membershipStart,
+  membershipEnd,
+});
 
   await prisma.member.create({
     data: {
       gymId: user.owner.gymId,
 
       membershipPlanId: parsed.data.membershipPlanId,
+
+      membershipStart,
+      membershipEnd,
 
       firstName: parsed.data.firstName,
       lastName: parsed.data.lastName,
@@ -59,11 +79,9 @@ export async function createMember(data: MemberInput) {
       height: parsed.data.height,
       weight: parsed.data.weight,
 
-      emergencyContactName:
-        parsed.data.emergencyContactName,
+      emergencyContactName: parsed.data.emergencyContactName,
 
-      emergencyContactPhone:
-        parsed.data.emergencyContactPhone,
+      emergencyContactPhone: parsed.data.emergencyContactPhone,
     },
   });
 
@@ -75,10 +93,7 @@ export async function createMember(data: MemberInput) {
   };
 }
 
-export async function updateMember(
-  id: string,
-  data: MemberInput
-) {
+export async function updateMember(id: string, data: MemberInput) {
   const session = await auth();
 
   if (!session?.user?.email) {
@@ -108,17 +123,14 @@ export async function updateMember(
       email: parsed.data.email || null,
       phone: parsed.data.phone,
 
-      membershipPlanId:
-        parsed.data.membershipPlanId,
+      membershipPlanId: parsed.data.membershipPlanId,
 
       height: parsed.data.height,
       weight: parsed.data.weight,
 
-      emergencyContactName:
-        parsed.data.emergencyContactName,
+      emergencyContactName: parsed.data.emergencyContactName,
 
-      emergencyContactPhone:
-        parsed.data.emergencyContactPhone,
+      emergencyContactPhone: parsed.data.emergencyContactPhone,
     },
   });
 

@@ -1,35 +1,42 @@
 import { prisma } from "@/lib/prisma";
 
-export default async function RecentMembers() {
-  const members = await prisma.member.findMany({
+export default async function RecentPayments() {
+  const payments = await prisma.payment.findMany({
     take: 5,
+    include: {
+      member: true,
+    },
     orderBy: {
-      createdAt: "desc",
+      paymentDate: "desc",
     },
   });
 
   return (
     <div className="rounded-xl border bg-background p-6">
       <h2 className="mb-6 text-xl font-semibold">
-        Recent Members
+        Recent Payments
       </h2>
 
       <div className="space-y-4">
-        {members.map((member) => (
+        {payments.map((payment) => (
           <div
-            key={member.id}
+            key={payment.id}
             className="flex items-center justify-between"
           >
             <div>
               <p className="font-medium">
-                {member.firstName}{" "}
-                {member.lastName}
+                {payment.member.firstName}{" "}
+                {payment.member.lastName}
               </p>
 
               <p className="text-sm text-muted-foreground">
-                {member.phone}
+                {payment.paymentMethod}
               </p>
             </div>
+
+            <p className="font-bold text-green-600">
+              ₹{Number(payment.amount)}
+            </p>
           </div>
         ))}
       </div>
