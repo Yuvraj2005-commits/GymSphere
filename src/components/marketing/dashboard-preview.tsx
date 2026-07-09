@@ -1,4 +1,4 @@
-"use client";   
+"use client";
 import { Activity, TrendingUp, Users, Wallet } from "lucide-react";
 
 import SectionContainer from "@/components/common/section-container";
@@ -6,9 +6,9 @@ import SectionHeading from "@/components/common/section-heading";
 import GradientBadge from "@/components/common/gradient-badge";
 
 import StatsCard from "@/components/dashboard/stats-card";
-import RevenueChart from "@/components/dashboard/revenue-chart";
-import AIInsights from "@/components/dashboard/ai-insights";
-import RecentMembers from "@/components/dashboard/recent-members";
+import MarketingRevenueChart from "./marketing-revenue-chart";
+// import AIInsights from "@/components/dashboard/ai-insights";
+// import RecentMembers from "@/components/dashboard/recent-members";
 
 import { motion } from "framer-motion";
 
@@ -59,14 +59,40 @@ export default function DashboardPreview() {
 
           {/* Revenue Chart */}
 
-          <RevenueChart />
+          <MarketingRevenueChart />
 
           {/* Bottom */}
 
           <div className="grid gap-6 lg:grid-cols-2">
-            <AIInsights />
+            <div className="rounded-3xl border bg-background p-6">
+              <h3 className="text-lg font-semibold">AI Insights</h3>
 
-            <RecentMembers />
+              <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
+                <li>📈 Revenue increased by 18% this month</li>
+                <li>👥 Member retention is above 92%</li>
+                <li>💳 Most payments are made online</li>
+                <li>🏋️ Peak attendance: 6 PM – 8 PM</li>
+              </ul>
+            </div>
+
+            <div className="rounded-3xl border bg-background p-6">
+              <h3 className="text-lg font-semibold">Recent Members</h3>
+
+              <div className="mt-4 space-y-4">
+                {["Rahul Sharma", "Priya Singh", "Aman Kumar"].map((member) => (
+                  <div
+                    key={member}
+                    className="flex items-center justify-between"
+                  >
+                    <span>{member}</span>
+
+                    <span className="text-sm text-muted-foreground">
+                      Joined Today
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </motion.div>

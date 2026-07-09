@@ -1,22 +1,29 @@
 import {
-  DashboardPreview,
-  Features,
-  Hero,
   Navbar,
+  Hero,
+  Trusted,
+  Features,
+  DashboardPreview,
+  Pricing,
+  Testimonials,
+  FAQ,
+  CTA,
+  Footer,
 } from "@/components/marketing";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <main className="min-h-screen">
-
+    <>
       <Navbar />
-
       <Hero />
-
+      <Trusted />
       <Features />
-
       <DashboardPreview />
-
-    </main>
+      <Pricing />
+      <Testimonials />
+      <FAQ />
+      <CTA />
+      <Footer />
+    </>
   );
 }
