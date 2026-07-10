@@ -43,6 +43,7 @@ model User {
 
   name          String?
   email         String?   @unique
+   password String?
   emailVerified DateTime?
   image         String?
 
@@ -226,4 +227,15 @@ model Payment {
   createdAt DateTime @default(now())
 
   @@index([memberId])
+}
+model PasswordResetToken {
+  id String @id @default(cuid())
+
+  email String
+
+  token String @unique
+
+  expires DateTime
+
+  createdAt DateTime @default(now())
 }
