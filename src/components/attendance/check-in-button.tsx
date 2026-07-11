@@ -1,36 +1,48 @@
 "use client";
 
 import { useTransition } from "react";
-import { checkIn } from "@/actions/attendance";
-import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+
 import { toast } from "sonner";
 
-interface Props {
+import { checkIn } from "@/actions/attendance";
+import { Button } from "@/components/ui/button";
+
+interface CheckInButtonProps {
   memberId: string;
 }
 
 export default function CheckInButton({
   memberId,
-}: Props) {
-  const [pending, startTransition] = useTransition();
+}: CheckInButtonProps) {
+  const router = useRouter();
+
+  const [isPending, startTransition] =
+    useTransition();
+
+  function handleCheckIn() {
+    startTransition(async () => {
+      const result = await checkIn(memberId);
+
+      if (!result.success) {
+        toast.error(result.message);
+        return;
+      }
+
+      toast.success(result.message);
+
+      router.refresh();
+    });
+  }
 
   return (
     <Button
+      type="button"
       size="sm"
-      disabled={pending}
-      onClick={() =>
-        startTransition(async () => {
-          const result = await checkIn(memberId);
-
-          if (result.success) {
-            toast.success("Checked in successfully");
-          } else {
-            toast.error(result.message);
-          }
-        })
-      }
+      disabled={isPending}
+      onClick={handleCheckIn}
     >
-      {pending ? "..." : "Check In"}
+      {isPending ? "Checking..." : "Check In"}
     </Button>
   );
 }

@@ -14,17 +14,13 @@ export const PlanSchema = z.object({
     .optional()
     .or(z.literal("")),
 
-  durationDays: z
-    .number({
-      invalid_type_error: "Duration must be a number.",
-    })
+  durationDays: z.coerce
+    .number()
     .min(1, "Duration must be at least 1 day.")
     .max(3650, "Duration cannot exceed 10 years."),
 
-  price: z
-    .number({
-      invalid_type_error: "Price must be a number.",
-    })
+  price: z.coerce
+    .number()
     .positive("Price must be greater than 0.")
     .max(1000000, "Price is too high."),
 });

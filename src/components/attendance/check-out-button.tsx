@@ -1,34 +1,49 @@
 "use client";
 
 import { useTransition } from "react";
+import { useRouter } from "next/navigation";
+
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { checkOut } from "@/actions/attendance";
 
-interface Props {
+interface CheckOutButtonProps {
   attendanceId: string;
 }
 
 export default function CheckOutButton({
   attendanceId,
-}: Props) {
-  const [pending, startTransition] = useTransition();
+}: CheckOutButtonProps) {
+  const router = useRouter();
+
+  const [isPending, startTransition] =
+    useTransition();
+
+  function handleCheckOut() {
+    startTransition(async () => {
+      const result = await checkOut(attendanceId);
+
+      if (!result.success) {
+        toast.error(result.message);
+        return;
+      }
+
+      toast.success(result.message);
+
+      router.refresh();
+    });
+  }
 
   return (
     <Button
+      type="button"
       size="sm"
       variant="destructive"
-      disabled={pending}
-      onClick={() =>
-        startTransition(async () => {
-          await checkOut(attendanceId);
-
-          toast.success("Checked out successfully");
-        })
-      }
+      disabled={isPending}
+      onClick={handleCheckOut}
     >
-      {pending ? "..." : "Check Out"}
+      {isPending ? "Checking..." : "Check Out"}
     </Button>
   );
 }

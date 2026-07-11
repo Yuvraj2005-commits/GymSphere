@@ -1,6 +1,6 @@
+import AttendanceStats from "@/components/attendance/attendance-stats";
 import AttendanceTable from "@/components/attendance/attendance-table";
 import MemberCheckinList from "@/components/attendance/member-checkin-list";
-import AttendanceStats from "@/components/attendance/attendance-stats";
 
 export default function AttendancePage() {
   return (
@@ -10,14 +10,15 @@ export default function AttendancePage() {
           Attendance
         </h1>
 
-        <p className="text-muted-foreground mt-2">
-          Manage daily attendance.
+        <p className="mt-2 text-muted-foreground">
+          Manage daily member attendance.
         </p>
       </div>
+
       <AttendanceStats />
 
       <MemberCheckinList />
-      
+
       <AttendanceTable />
     </div>
   );

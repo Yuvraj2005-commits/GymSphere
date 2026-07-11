@@ -1,34 +1,62 @@
 import CheckOutButton from "./check-out-button";
 
 interface AttendanceRowProps {
-  attendance: any;
+  attendance: {
+    id: string;
+
+    checkIn: Date;
+
+    checkOut: Date | null;
+
+    member: {
+      id: string;
+      firstName: string;
+      lastName: string;
+      status: string;
+    };
+  };
 }
 
-export default function AttendanceRow({ attendance }: AttendanceRowProps) {
+export default function AttendanceRow({
+  attendance,
+}: AttendanceRowProps) {
   return (
-    <tr className="border-b">
-      <td className="px-6 py-4">
-        {attendance.member.firstName} {attendance.member.lastName}
+    <tr className="border-b transition-colors hover:bg-muted/30">
+      <td className="px-6 py-4 font-medium">
+        {attendance.member.firstName}{" "}
+        {attendance.member.lastName}
       </td>
 
       <td className="px-6 py-4">
-        {new Date(attendance.checkIn).toLocaleTimeString()}
+        {attendance.checkIn.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}
       </td>
 
       <td className="px-6 py-4">
         {attendance.checkOut
-          ? new Date(attendance.checkOut).toLocaleTimeString()
+          ? attendance.checkOut.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
           : "-"}
       </td>
 
       <td className="px-6 py-4">
         {attendance.checkOut ? (
-          <span className="text-green-600">Checked Out</span>
+          <span className="font-medium text-green-600">
+            Checked Out
+          </span>
         ) : (
           <div className="flex items-center gap-3">
-            <span className="text-blue-600">Checked In</span>
+            <span className="font-medium text-blue-600">
+              Checked In
+            </span>
 
-            <CheckOutButton attendanceId={attendance.id} />
+            <CheckOutButton
+              attendanceId={attendance.id}
+            />
           </div>
         )}
       </td>
