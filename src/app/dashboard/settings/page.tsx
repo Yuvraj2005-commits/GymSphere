@@ -1,4 +1,6 @@
-import SettingsForm from "@/components/settings/settings-form";
+import ProfileForm from "@/components/settings/profile-form";
+import GymForm from "@/components/settings/gym-form";
+import PasswordForm from "@/components/settings/password-form";
 
 export default function SettingsPage() {
   return (
@@ -8,12 +10,16 @@ export default function SettingsPage() {
           Settings
         </h1>
 
-        <p className="text-muted-foreground">
-          Manage your gym information.
+        <p className="mt-2 text-muted-foreground">
+          Manage your account and gym settings.
         </p>
       </div>
 
-      <SettingsForm />
+      <ProfileForm />
+
+      <GymForm />
+
+      <PasswordForm />
     </div>
   );
 }
