@@ -1,8 +1,9 @@
 "use server";
 
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+
+import { prisma } from "@/lib/prisma";
+import { getCurrentOwner } from "@/lib/current-owner";
 
 import {
   TrainerInput,
@@ -12,9 +13,9 @@ import {
 export async function createTrainer(
   data: TrainerInput
 ) {
-  const session = await auth();
+  const owner = await getCurrentOwner();
 
-  if (!session?.user?.email) {
+  if (!owner) {
     return {
       success: false,
       message: "Unauthorized",
@@ -26,27 +27,10 @@ export async function createTrainer(
   if (!parsed.success) {
     return {
       success: false,
-      message: "Invalid trainer data",
+      message: "Invalid trainer data.",
     };
   }
 
-  const owner = await prisma.user.findUnique({
-    where: {
-      email: session.user.email,
-    },
-    include: {
-      owner: true,
-    },
-  });
-
-  if (!owner?.owner) {
-    return {
-      success: false,
-      message: "Owner not found",
-    };
-  }
-
-  // Prevent duplicate email
   const existingUser = await prisma.user.findUnique({
     where: {
       email: parsed.data.email,
@@ -56,7 +40,7 @@ export async function createTrainer(
   if (existingUser) {
     return {
       success: false,
-      message: "Email already exists",
+      message: "A user with this email already exists.",
     };
   }
 
@@ -69,7 +53,7 @@ export async function createTrainer(
 
   await prisma.trainer.create({
     data: {
-      gymId: owner.owner.gymId,
+      gymId: owner.gymId,
       userId: user.id,
       specialization: parsed.data.specialization,
     },
@@ -79,45 +63,17 @@ export async function createTrainer(
 
   return {
     success: true,
-    message: "Trainer created successfully",
+    message: "Trainer created successfully.",
   };
 }
 
-export async function deleteTrainer(
-  id: string
-) {
-  const trainer =
-    await prisma.trainer.findUnique({
-      where: {
-        id,
-      },
-    });
-
-  if (!trainer) {
-    return {
-      success: false,
-    };
-  }
-
-  await prisma.user.delete({
-    where: {
-      id: trainer.userId,
-    },
-  });
-
-  revalidatePath("/dashboard/trainers");
-
-  return {
-    success: true,
-  };
-}
 export async function updateTrainer(
   id: string,
   data: TrainerInput
 ) {
-  const session = await auth();
+  const owner = await getCurrentOwner();
 
-  if (!session?.user?.email) {
+  if (!owner) {
     return {
       success: false,
       message: "Unauthorized",
@@ -129,13 +85,14 @@ export async function updateTrainer(
   if (!parsed.success) {
     return {
       success: false,
-      message: "Invalid trainer data",
+      message: "Invalid trainer data.",
     };
   }
 
-  const trainer = await prisma.trainer.findUnique({
+  const trainer = await prisma.trainer.findFirst({
     where: {
       id,
+      gymId: owner.gymId,
     },
     include: {
       user: true,
@@ -145,7 +102,23 @@ export async function updateTrainer(
   if (!trainer) {
     return {
       success: false,
-      message: "Trainer not found",
+      message: "Trainer not found.",
+    };
+  }
+
+  const existingUser = await prisma.user.findFirst({
+    where: {
+      email: parsed.data.email,
+      NOT: {
+        id: trainer.userId,
+      },
+    },
+  });
+
+  if (existingUser) {
+    return {
+      success: false,
+      message: "Email is already in use.",
     };
   }
 
@@ -172,6 +145,46 @@ export async function updateTrainer(
 
   return {
     success: true,
-    message: "Trainer updated successfully",
+    message: "Trainer updated successfully.",
+  };
+}
+
+export async function deleteTrainer(
+  id: string
+) {
+  const owner = await getCurrentOwner();
+
+  if (!owner) {
+    return {
+      success: false,
+      message: "Unauthorized",
+    };
+  }
+
+  const trainer = await prisma.trainer.findFirst({
+    where: {
+      id,
+      gymId: owner.gymId,
+    },
+  });
+
+  if (!trainer) {
+    return {
+      success: false,
+      message: "Trainer not found.",
+    };
+  }
+
+  await prisma.user.delete({
+    where: {
+      id: trainer.userId,
+    },
+  });
+
+  revalidatePath("/dashboard/trainers");
+
+  return {
+    success: true,
+    message: "Trainer deleted successfully.",
   };
 }

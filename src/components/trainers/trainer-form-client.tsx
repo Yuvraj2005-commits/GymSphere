@@ -2,11 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import {
   createTrainer,
   updateTrainer,
 } from "@/actions/trainer";
+
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface TrainerFormProps {
   trainer?: {
@@ -33,27 +37,32 @@ export default function TrainerFormClient({
 
     setLoading(true);
 
-    const form = new FormData(e.currentTarget);
+    try {
+      const form = new FormData(e.currentTarget);
 
-    const data = {
-      name: form.get("name") as string,
-      email: form.get("email") as string,
-      specialization: form.get(
-        "specialization"
-      ) as string,
-    };
+      const data = {
+        name: form.get("name") as string,
+        email: form.get("email") as string,
+        specialization: form.get(
+          "specialization"
+        ) as string,
+      };
 
-    const result = trainer
-      ? await updateTrainer(trainer.id, data)
-      : await createTrainer(data);
+      const result = trainer
+        ? await updateTrainer(trainer.id, data)
+        : await createTrainer(data);
 
-    setLoading(false);
+      if (!result.success) {
+        toast.error(result.message);
+        return;
+      }
 
-    if (result.success) {
+      toast.success(result.message);
+
       router.push("/dashboard/trainers");
       router.refresh();
-    } else {
-      alert(result.message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -63,57 +72,72 @@ export default function TrainerFormClient({
       className="space-y-6 rounded-2xl border bg-background p-8"
     >
       <div>
-        <label className="mb-2 block font-medium">
+        <label
+          htmlFor="name"
+          className="mb-2 block font-medium"
+        >
           Name
         </label>
 
-        <input
+        <Input
+          id="name"
           name="name"
           required
           defaultValue={trainer?.user.name ?? ""}
-          className="w-full rounded-lg border p-3"
+          placeholder="Trainer name"
         />
       </div>
 
       <div>
-        <label className="mb-2 block font-medium">
+        <label
+          htmlFor="email"
+          className="mb-2 block font-medium"
+        >
           Email
         </label>
 
-        <input
+        <Input
+          id="email"
           name="email"
           type="email"
           required
           defaultValue={trainer?.user.email ?? ""}
-          className="w-full rounded-lg border p-3"
+          placeholder="trainer@example.com"
         />
       </div>
 
       <div>
-        <label className="mb-2 block font-medium">
+        <label
+          htmlFor="specialization"
+          className="mb-2 block font-medium"
+        >
           Specialization
         </label>
 
-        <input
+        <Input
+          id="specialization"
           name="specialization"
           required
           defaultValue={
             trainer?.specialization ?? ""
           }
-          className="w-full rounded-lg border p-3"
+          placeholder="e.g. Strength Training"
         />
       </div>
 
-      <button
+      <Button
+        type="submit"
         disabled={loading}
-        className="rounded-lg bg-primary px-6 py-3 text-primary-foreground"
+        className="w-full"
       >
         {loading
-          ? "Saving..."
+          ? trainer
+            ? "Updating..."
+            : "Creating..."
           : trainer
           ? "Update Trainer"
           : "Create Trainer"}
-      </button>
+      </Button>
     </form>
   );
 }

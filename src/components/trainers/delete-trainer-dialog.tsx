@@ -1,36 +1,96 @@
 "use client";
 
+import { useTransition } from "react";
+import { useRouter } from "next/navigation";
+
 import { Trash2 } from "lucide-react";
-import { deleteTrainer } from "@/actions/trainer";
 import { toast } from "sonner";
 
-interface Props {
+import { deleteTrainer } from "@/actions/trainer";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
+interface DeleteTrainerDialogProps {
   trainerId: string;
 }
 
 export default function DeleteTrainerDialog({
   trainerId,
-}: Props) {
-  async function handleDelete() {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this trainer?"
-    );
+}: DeleteTrainerDialogProps) {
+  const router = useRouter();
 
-    if (!confirmed) return;
+  const [isPending, startTransition] =
+    useTransition();
 
-    const result = await deleteTrainer(trainerId);
+  function handleDelete() {
+    startTransition(async () => {
+      const result = await deleteTrainer(
+        trainerId
+      );
 
-    if (!result.success) {
-      alert(result.message || "Failed to delete trainer");
-    }
+      if (!result.success) {
+        toast.error(result.message);
+        return;
+      }
+
+      toast.success(result.message);
+
+      router.refresh();
+    });
   }
 
   return (
-    <button
-      onClick={handleDelete}
-      className="text-red-500 hover:text-red-700"
-    >
-      <Trash2 className="h-4 w-4" />
-    </button>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <button
+          type="button"
+          aria-label="Delete Trainer"
+          className="text-red-500 transition hover:text-red-600"
+        >
+          <Trash2 className="h-4 w-4" />
+        </button>
+      </AlertDialogTrigger>
+
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            Delete Trainer
+          </AlertDialogTitle>
+
+          <AlertDialogDescription>
+            This action cannot be undone.
+            <br />
+            This trainer will be permanently removed
+            from your gym.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        <AlertDialogFooter>
+          <AlertDialogCancel>
+            Cancel
+          </AlertDialogCancel>
+
+          <AlertDialogAction
+            disabled={isPending}
+            onClick={handleDelete}
+            className="bg-red-600 hover:bg-red-700"
+          >
+            {isPending
+              ? "Deleting..."
+              : "Delete"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

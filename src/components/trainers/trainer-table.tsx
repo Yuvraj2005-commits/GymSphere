@@ -1,35 +1,29 @@
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+
+import { prisma } from "@/lib/prisma";
+import { getCurrentOwner } from "@/lib/current-owner";
 
 import TrainerRow from "./trainer-row";
 
 export default async function TrainerTable() {
-  const session = await auth();
+  const owner = await getCurrentOwner();
 
-  if (!session?.user?.email) {
-    redirect("/login");
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session.user.email,
-    },
-    include: {
-      owner: true,
-    },
-  });
-
-  if (!user?.owner) {
+  if (!owner) {
     redirect("/dashboard/onboarding");
   }
 
   const trainers = await prisma.trainer.findMany({
     where: {
-      gymId: user.owner.gymId,
+      gymId: owner.gymId,
     },
     include: {
-      user: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",
@@ -44,7 +38,7 @@ export default async function TrainerTable() {
         </h2>
 
         <p className="mt-2 text-muted-foreground">
-          Add your first trainer.
+          Add your first trainer to get started.
         </p>
       </div>
     );
@@ -55,19 +49,19 @@ export default async function TrainerTable() {
       <table className="w-full">
         <thead className="border-b bg-muted/50">
           <tr>
-            <th className="px-6 py-4 text-left">
+            <th className="px-6 py-4 text-left text-sm font-semibold">
               Name
             </th>
 
-            <th className="px-6 py-4 text-left">
+            <th className="px-6 py-4 text-left text-sm font-semibold">
               Email
             </th>
 
-            <th className="px-6 py-4 text-left">
+            <th className="px-6 py-4 text-left text-sm font-semibold">
               Specialization
             </th>
 
-            <th className="px-6 py-4 text-center">
+            <th className="px-6 py-4 text-center text-sm font-semibold">
               Actions
             </th>
           </tr>
