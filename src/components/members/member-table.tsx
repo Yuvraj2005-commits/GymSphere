@@ -1,64 +1,40 @@
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+
+import { prisma } from "@/lib/prisma";
+import { getCurrentOwner } from "@/lib/current-owner";
 
 import MemberRow from "./member-row";
 
 export default async function MemberTable() {
-  const session = await auth();
+  const owner = await getCurrentOwner();
 
-  if (!session?.user?.email) {
-    redirect("/login");
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session.user.email,
-    },
-    include: {
-      owner: true,
-    },
-  });
-
-  if (!user?.owner) {
+  if (!owner) {
     redirect("/dashboard/onboarding");
   }
 
-  const members = (
-    await prisma.member.findMany({
-      where: {
-        gymId: user.owner.gymId,
-      },
-      include: {
-        membershipPlan: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    })
-  ).map((member) => ({
-    id: member.id,
-    firstName: member.firstName,
-    lastName: member.lastName,
-    email: member.email,
-    phone: member.phone,
-    status: member.status,
-
-    joinedAt: member.joinedAt,
-
-    membershipStart: member.membershipStart,
-    membershipEnd: member.membershipEnd,
-
-    membershipPlan: {
-      id: member.membershipPlan.id,
-      name: member.membershipPlan.name,
+  const members = await prisma.member.findMany({
+    where: {
+      gymId: owner.gymId,
     },
-  }));
+    include: {
+      membershipPlan: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
   if (members.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed p-16 text-center">
-        <h2 className="text-2xl font-bold">No Members Yet</h2>
+        <h2 className="text-2xl font-bold">
+          No Members Yet
+        </h2>
 
         <p className="mt-2 text-muted-foreground">
           Add your first gym member to get started.
@@ -76,11 +52,17 @@ export default async function MemberTable() {
               Member
             </th>
 
-            <th className="px-6 py-4 text-left text-sm font-semibold">Email</th>
+            <th className="px-6 py-4 text-left text-sm font-semibold">
+              Email
+            </th>
 
-            <th className="px-6 py-4 text-left text-sm font-semibold">Phone</th>
+            <th className="px-6 py-4 text-left text-sm font-semibold">
+              Phone
+            </th>
 
-            <th className="px-6 py-4 text-left text-sm font-semibold">Plan</th>
+            <th className="px-6 py-4 text-left text-sm font-semibold">
+              Plan
+            </th>
 
             <th className="px-6 py-4 text-left text-sm font-semibold">
               Status
@@ -90,18 +72,22 @@ export default async function MemberTable() {
               Joined
             </th>
 
-            <th className="px-6 py-4 text-center text-sm font-semibold">
-              Actions
-            </th>
             <th className="px-6 py-4 text-left text-sm font-semibold">
               Expires
+            </th>
+
+            <th className="px-6 py-4 text-center text-sm font-semibold">
+              Actions
             </th>
           </tr>
         </thead>
 
         <tbody>
           {members.map((member) => (
-            <MemberRow key={member.id} member={member} />
+            <MemberRow
+              key={member.id}
+              member={member}
+            />
           ))}
         </tbody>
       </table>

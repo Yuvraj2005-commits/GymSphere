@@ -10,9 +10,7 @@ import SocialLogin from "./social-login";
 export default function LoginForm() {
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(
-    e: React.FormEvent<HTMLFormElement>
-  ) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     setLoading(true);
@@ -22,26 +20,29 @@ export default function LoginForm() {
     const email = form.get("email") as string;
     const password = form.get("password") as string;
 
-    await signIn("credentials", {
+    const result = await signIn("credentials", {
       email,
       password,
-      callbackUrl: "/dashboard",
+      redirect: false,
     });
 
     setLoading(false);
+
+    if (result?.error) {
+      console.log(result);
+      alert(result.error);
+      return;
+    }
+
+    window.location.href = "/dashboard";
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-6"
-    >
+    <form onSubmit={handleSubmit} className="space-y-6">
       <SocialLogin />
 
       <div>
-        <label className="mb-2 block text-sm font-medium">
-          Email
-        </label>
+        <label className="mb-2 block text-sm font-medium">Email</label>
 
         <input
           name="email"
@@ -53,14 +54,9 @@ export default function LoginForm() {
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium">
-          Password
-        </label>
+        <label className="mb-2 block text-sm font-medium">Password</label>
 
-        <PasswordInput
-          name="password"
-          placeholder="Enter password"
-        />
+        <PasswordInput name="password" placeholder="Enter password" />
       </div>
 
       <div className="flex items-center justify-between text-sm">
@@ -69,10 +65,7 @@ export default function LoginForm() {
           Remember me
         </label>
 
-        <Link
-          href="/forgot-password"
-          className="text-primary hover:underline"
-        >
+        <Link href="/forgot-password" className="text-primary hover:underline">
           Forgot Password?
         </Link>
       </div>
@@ -86,10 +79,7 @@ export default function LoginForm() {
 
       <p className="text-center text-sm text-muted-foreground">
         Don't have an account?{" "}
-        <Link
-          href="/register"
-          className="font-medium text-primary"
-        >
+        <Link href="/register" className="font-medium text-primary">
           Register
         </Link>
       </p>

@@ -1,12 +1,12 @@
 import Link from "next/link";
 
-import MemberTable from "@/components/members/member-table";
 import MemberSearch from "@/components/members/member-search";
+import MemberTable from "@/components/members/member-table";
 
 export default function MembersPage() {
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-4xl font-bold">
             Members
@@ -19,7 +19,7 @@ export default function MembersPage() {
 
         <Link
           href="/dashboard/members/new"
-          className="rounded-xl bg-primary px-5 py-3 text-primary-foreground"
+          className="inline-flex items-center justify-center rounded-xl bg-primary px-5 py-3 font-medium text-primary-foreground transition hover:opacity-90"
         >
           + Add Member
         </Link>

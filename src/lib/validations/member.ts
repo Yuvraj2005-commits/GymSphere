@@ -1,22 +1,58 @@
 import { z } from "zod";
 
 export const MemberSchema = z.object({
-  firstName: z.string().min(2),
-  lastName: z.string().min(2),
+  firstName: z
+    .string()
+    .trim()
+    .min(2, "First name must be at least 2 characters.")
+    .max(50, "First name is too long."),
 
-  email: z.string().email().optional().or(z.literal("")),
+  lastName: z
+    .string()
+    .trim()
+    .min(2, "Last name must be at least 2 characters.")
+    .max(50, "Last name is too long."),
 
-  phone: z.string().min(10),
+  email: z
+    .string()
+    .trim()
+    .email("Please enter a valid email address.")
+    .optional()
+    .or(z.literal("")),
 
-  membershipPlanId: z.string(),
+  phone: z
+    .string()
+    .trim()
+    .regex(/^[0-9]{10}$/, "Phone number must contain exactly 10 digits."),
 
-  height: z.number().optional(),
+  membershipPlanId: z
+    .string()
+    .min(1, "Please select a membership plan."),
 
-  weight: z.number().optional(),
+  height: z
+    .number()
+    .min(50, "Height seems too low.")
+    .max(300, "Height seems too high.")
+    .optional(),
 
-  emergencyContactName: z.string().optional(),
+  weight: z
+    .number()
+    .min(10, "Weight seems too low.")
+    .max(500, "Weight seems too high.")
+    .optional(),
 
-  emergencyContactPhone: z.string().optional(),
+  emergencyContactName: z
+    .string()
+    .trim()
+    .max(100, "Emergency contact name is too long.")
+    .optional(),
+
+  emergencyContactPhone: z
+    .string()
+    .trim()
+    .regex(/^[0-9]{10}$/, "Emergency contact phone must contain exactly 10 digits.")
+    .optional()
+    .or(z.literal("")),
 });
 
 export type MemberInput = z.infer<typeof MemberSchema>;

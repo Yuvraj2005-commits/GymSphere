@@ -1,9 +1,34 @@
 "use server";
 
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function getRevenueChartData() {
+  const session = await auth();
+
+  if (!session?.user?.email) {
+    return [];
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email: session.user.email,
+    },
+    include: {
+      owner: true,
+    },
+  });
+
+  if (!user?.owner) {
+    return [];
+  }
+
   const payments = await prisma.payment.findMany({
+    where: {
+      member: {
+        gymId: user.owner.gymId,
+      },
+    },
     select: {
       amount: true,
       paymentDate: true,

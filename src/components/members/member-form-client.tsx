@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -40,9 +41,7 @@ interface Member {
 
 interface Props {
   plans: Plan[];
-
   member?: Member;
-
   mode?: "create" | "edit";
 }
 
@@ -53,83 +52,96 @@ export default function MemberFormClient({
 }: Props) {
   const router = useRouter();
 
-  const form = useForm<MemberInput>({
+  const [loading, setLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<MemberInput>({
     resolver: zodResolver(MemberSchema),
 
     defaultValues: {
       firstName: member?.firstName ?? "",
-
       lastName: member?.lastName ?? "",
-
       email: member?.email ?? "",
-
       phone: member?.phone ?? "",
-
       membershipPlanId:
         member?.membershipPlanId ?? "",
-
       height: member?.height ?? undefined,
-
       weight: member?.weight ?? undefined,
-
       emergencyContactName:
         member?.emergencyContactName ?? "",
-
       emergencyContactPhone:
         member?.emergencyContactPhone ?? "",
     },
   });
 
   async function onSubmit(values: MemberInput) {
-    let result;
+    setLoading(true);
 
-    if (mode === "edit" && member) {
-      result = await updateMember(
-        member.id,
-        values
-      );
-    } else {
-      result = await createMember(values);
-    }
+    try {
+      const result =
+        mode === "edit" && member
+          ? await updateMember(member.id, values)
+          : await createMember(values);
 
-    if (result.success) {
+      if (!result.success) {
+        toast.error(result.message);
+        return;
+      }
+
       toast.success(result.message);
 
       router.push("/dashboard/members");
-
       router.refresh();
-    } else {
-      toast.error(result.message);
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <form
-      onSubmit={form.handleSubmit(onSubmit)}
-      className="space-y-5 max-w-xl"
+      onSubmit={handleSubmit(onSubmit)}
+      className="max-w-xl space-y-5"
     >
-      <Input
-        placeholder="First Name"
-        {...form.register("firstName")}
-      />
+      <div>
+        <Input
+          placeholder="First Name"
+          {...register("firstName")}
+        />
+        {errors.firstName && (
+          <p className="mt-1 text-sm text-red-500">
+            {errors.firstName.message}
+          </p>
+        )}
+      </div>
 
-      <Input
-        placeholder="Last Name"
-        {...form.register("lastName")}
-      />
+      <div>
+        <Input
+          placeholder="Last Name"
+          {...register("lastName")}
+        />
+        {errors.lastName && (
+          <p className="mt-1 text-sm text-red-500">
+            {errors.lastName.message}
+          </p>
+        )}
+      </div>
 
       <Input
         placeholder="Email"
-        {...form.register("email")}
+        type="email"
+        {...register("email")}
       />
 
       <Input
         placeholder="Phone"
-        {...form.register("phone")}
+        {...register("phone")}
       />
 
       <select
-        {...form.register("membershipPlanId")}
+        {...register("membershipPlanId")}
         className="h-11 w-full rounded-lg border bg-background px-3"
       >
         <option value="">
@@ -148,39 +160,44 @@ export default function MemberFormClient({
 
       <Input
         type="number"
-        placeholder="Height"
-        {...form.register("height", {
+        placeholder="Height (cm)"
+        {...register("height", {
           valueAsNumber: true,
         })}
       />
 
       <Input
         type="number"
-        placeholder="Weight"
-        {...form.register("weight", {
+        placeholder="Weight (kg)"
+        {...register("weight", {
           valueAsNumber: true,
         })}
       />
 
       <Input
         placeholder="Emergency Contact Name"
-        {...form.register(
+        {...register(
           "emergencyContactName"
         )}
       />
 
       <Input
         placeholder="Emergency Contact Phone"
-        {...form.register(
+        {...register(
           "emergencyContactPhone"
         )}
       />
 
       <Button
         type="submit"
+        disabled={loading}
         className="w-full"
       >
-        {mode === "edit"
+        {loading
+          ? mode === "edit"
+            ? "Updating..."
+            : "Creating..."
+          : mode === "edit"
           ? "Update Member"
           : "Create Member"}
       </Button>

@@ -1,15 +1,18 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
-import { MemberInput, MemberSchema } from "@/lib/validations/member";
+import { prisma } from "@/lib/prisma";
+import { getCurrentOwner } from "@/lib/current-owner";
+import {
+  MemberInput,
+  MemberSchema,
+} from "@/lib/validations/member";
 
 export async function createMember(data: MemberInput) {
-  const session = await auth();
+  const owner = await getCurrentOwner();
 
-  if (!session?.user?.email) {
+  if (!owner) {
     return {
       success: false,
       message: "Unauthorized",
@@ -25,47 +28,33 @@ export async function createMember(data: MemberInput) {
     };
   }
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session.user.email,
-    },
-    include: {
-      owner: true,
-    },
-  });
-
-  if (!user?.owner) {
-    return {
-      success: false,
-      message: "Owner not found",
-    };
-  }
-  const plan = await prisma.membershipPlan.findUnique({
+  const plan = await prisma.membershipPlan.findFirst({
     where: {
       id: parsed.data.membershipPlanId,
+      gymId: owner.gymId,
     },
   });
 
   if (!plan) {
-    throw new Error("Membership plan not found");
+    return {
+      success: false,
+      message: "Membership plan not found.",
+    };
   }
 
   const membershipStart = new Date();
 
   const membershipEnd = new Date(membershipStart);
 
-  membershipEnd.setDate(membershipEnd.getDate() + plan.durationDays);
-  console.log({
-  durationDays: plan.durationDays,
-  membershipStart,
-  membershipEnd,
-});
+  membershipEnd.setDate(
+    membershipEnd.getDate() + plan.durationDays
+  );
 
   await prisma.member.create({
     data: {
-      gymId: user.owner.gymId,
+      gymId: owner.gymId,
 
-      membershipPlanId: parsed.data.membershipPlanId,
+      membershipPlanId: plan.id,
 
       membershipStart,
       membershipEnd,
@@ -74,14 +63,16 @@ export async function createMember(data: MemberInput) {
       lastName: parsed.data.lastName,
 
       email: parsed.data.email || null,
-      phone: parsed.data.phone,
+      phone: parsed.data.phone || null,
 
       height: parsed.data.height,
       weight: parsed.data.weight,
 
-      emergencyContactName: parsed.data.emergencyContactName,
+      emergencyContactName:
+        parsed.data.emergencyContactName,
 
-      emergencyContactPhone: parsed.data.emergencyContactPhone,
+      emergencyContactPhone:
+        parsed.data.emergencyContactPhone,
     },
   });
 
@@ -89,14 +80,17 @@ export async function createMember(data: MemberInput) {
 
   return {
     success: true,
-    message: "Member created successfully",
+    message: "Member created successfully.",
   };
 }
 
-export async function updateMember(id: string, data: MemberInput) {
-  const session = await auth();
+export async function updateMember(
+  id: string,
+  data: MemberInput
+) {
+  const owner = await getCurrentOwner();
 
-  if (!session?.user?.email) {
+  if (!owner) {
     return {
       success: false,
       message: "Unauthorized",
@@ -112,25 +106,55 @@ export async function updateMember(id: string, data: MemberInput) {
     };
   }
 
+  const member = await prisma.member.findFirst({
+    where: {
+      id,
+      gymId: owner.gymId,
+    },
+  });
+
+  if (!member) {
+    return {
+      success: false,
+      message: "Member not found.",
+    };
+  }
+
+  const plan = await prisma.membershipPlan.findFirst({
+    where: {
+      id: parsed.data.membershipPlanId,
+      gymId: owner.gymId,
+    },
+  });
+
+  if (!plan) {
+    return {
+      success: false,
+      message: "Membership plan not found.",
+    };
+  }
+
   await prisma.member.update({
     where: {
       id,
     },
     data: {
+      membershipPlanId: plan.id,
+
       firstName: parsed.data.firstName,
       lastName: parsed.data.lastName,
 
       email: parsed.data.email || null,
-      phone: parsed.data.phone,
-
-      membershipPlanId: parsed.data.membershipPlanId,
+      phone: parsed.data.phone || null,
 
       height: parsed.data.height,
       weight: parsed.data.weight,
 
-      emergencyContactName: parsed.data.emergencyContactName,
+      emergencyContactName:
+        parsed.data.emergencyContactName,
 
-      emergencyContactPhone: parsed.data.emergencyContactPhone,
+      emergencyContactPhone:
+        parsed.data.emergencyContactPhone,
     },
   });
 
@@ -138,11 +162,34 @@ export async function updateMember(id: string, data: MemberInput) {
 
   return {
     success: true,
-    message: "Member updated successfully",
+    message: "Member updated successfully.",
   };
 }
 
 export async function deleteMember(id: string) {
+  const owner = await getCurrentOwner();
+
+  if (!owner) {
+    return {
+      success: false,
+      message: "Unauthorized",
+    };
+  }
+
+  const member = await prisma.member.findFirst({
+    where: {
+      id,
+      gymId: owner.gymId,
+    },
+  });
+
+  if (!member) {
+    return {
+      success: false,
+      message: "Member not found.",
+    };
+  }
+
   await prisma.member.delete({
     where: {
       id,
@@ -153,6 +200,6 @@ export async function deleteMember(id: string) {
 
   return {
     success: true,
-    message: "Member deleted successfully",
+    message: "Member deleted successfully.",
   };
 }

@@ -2,6 +2,7 @@
 
 import { Trash2 } from "lucide-react";
 import { deleteTrainer } from "@/actions/trainer";
+import { toast } from "sonner";
 
 interface Props {
   trainerId: string;

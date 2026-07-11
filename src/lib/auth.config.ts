@@ -21,7 +21,10 @@ export default {
       },
 
       async authorize(credentials) {
+        console.log("Credentials:", credentials);
+
         if (!credentials?.email || !credentials?.password) {
+          console.log("Missing credentials");
           return null;
         }
 
@@ -31,18 +34,30 @@ export default {
           },
         });
 
-        if (!user || !user.password) {
+        console.log("User:", user);
+
+        if (!user) {
+          console.log("User not found");
+          return null;
+        }
+
+        if (!user.password) {
+          console.log("Password is null");
           return null;
         }
 
         const valid = await bcrypt.compare(
           credentials.password as string,
-          user.password
+          user.password,
         );
+
+        console.log("Password valid:", valid);
 
         if (!valid) {
           return null;
         }
+
+        console.log("Login successful");
 
         return {
           id: user.id,

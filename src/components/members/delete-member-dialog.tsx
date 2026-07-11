@@ -35,13 +35,14 @@ export default function DeleteMemberDialog({
     startTransition(async () => {
       const result = await deleteMember(memberId);
 
-      if (result.success) {
-        toast.success(result.message);
-
-        router.refresh();
-      } else {
+      if (!result.success) {
         toast.error(result.message);
+        return;
       }
+
+      toast.success(result.message);
+
+      router.refresh();
     });
   }
 
@@ -49,6 +50,8 @@ export default function DeleteMemberDialog({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <button
+          type="button"
+          aria-label="Delete Member"
           className="text-red-500 transition hover:text-red-600"
         >
           <Trash2 className="h-4 w-4" />
@@ -64,7 +67,7 @@ export default function DeleteMemberDialog({
           <AlertDialogDescription>
             This action cannot be undone.
             <br />
-            The member will be permanently removed.
+            This member will be permanently removed from your gym.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
