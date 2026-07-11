@@ -239,3 +239,17 @@ model PasswordResetToken {
 
   createdAt DateTime @default(now())
 }
+model PendingRegistration {
+  id        String   @id @default(cuid())
+
+  name      String
+  email     String   @unique
+  password  String
+
+  otp       String
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}

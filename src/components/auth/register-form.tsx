@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
 
 import PasswordInput from "./password-input";
 import SocialLogin from "./social-login";
-import { registerUser } from "@/actions/register";
+
+import { startRegistration } from "@/actions/start-registration";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -33,7 +33,7 @@ export default function RegisterForm() {
 
     setLoading(true);
 
-    const result = await registerUser({
+    const result = await startRegistration({
       name,
       email,
       password,
@@ -46,12 +46,11 @@ export default function RegisterForm() {
       return;
     }
 
-    // Automatically sign in after registration
-    await signIn("credentials", {
-      email,
-      password,
-      callbackUrl: "/dashboard",
-    });
+    router.push(
+      `/verify-email?email=${encodeURIComponent(
+        email
+      )}`
+    );
   }
 
   return (
@@ -114,7 +113,9 @@ export default function RegisterForm() {
         disabled={loading}
         className="w-full rounded-xl bg-primary py-3 font-semibold text-primary-foreground"
       >
-        {loading ? "Creating..." : "Create Account"}
+        {loading
+          ? "Sending OTP..."
+          : "Create Account"}
       </button>
 
       <p className="text-center text-sm text-muted-foreground">
