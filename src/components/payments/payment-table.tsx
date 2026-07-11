@@ -1,4 +1,8 @@
+import { redirect } from "next/navigation";
+
 import { prisma } from "@/lib/prisma";
+import { getCurrentOwner } from "@/lib/current-owner";
+
 import DeletePaymentDialog from "./delete-payment-dialog";
 
 interface PaymentTableProps {
@@ -8,30 +12,48 @@ interface PaymentTableProps {
 export default async function PaymentTable({
   search = "",
 }: PaymentTableProps) {
+  const owner = await getCurrentOwner();
+
+  if (!owner) {
+    redirect("/dashboard/onboarding");
+  }
+
   const payments = await prisma.payment.findMany({
-    where: search
-      ? {
-          member: {
-            OR: [
-              {
-                firstName: {
-                  contains: search,
-                  mode: "insensitive",
+    where: {
+      member: {
+        gymId: owner.gymId,
+
+        ...(search
+          ? {
+              OR: [
+                {
+                  firstName: {
+                    contains: search,
+                    mode: "insensitive",
+                  },
                 },
-              },
-              {
-                lastName: {
-                  contains: search,
-                  mode: "insensitive",
+                {
+                  lastName: {
+                    contains: search,
+                    mode: "insensitive",
+                  },
                 },
-              },
-            ],
-          },
-        }
-      : {},
-    include: {
-      member: true,
+              ],
+            }
+          : {}),
+      },
     },
+
+    include: {
+      member: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+        },
+      },
+    },
+
     orderBy: {
       paymentDate: "desc",
     },
@@ -45,7 +67,7 @@ export default async function PaymentTable({
         </h2>
 
         <p className="mt-2 text-muted-foreground">
-          Record your first payment.
+          Record your first payment to get started.
         </p>
       </div>
     );
@@ -56,11 +78,25 @@ export default async function PaymentTable({
       <table className="w-full">
         <thead className="border-b bg-muted/50">
           <tr>
-            <th className="px-6 py-4 text-left">Member</th>
-            <th className="px-6 py-4 text-left">Amount</th>
-            <th className="px-6 py-4 text-left">Method</th>
-            <th className="px-6 py-4 text-left">Date</th>
-            <th className="px-6 py-4 text-center">Actions</th>
+            <th className="px-6 py-4 text-left text-sm font-semibold">
+              Member
+            </th>
+
+            <th className="px-6 py-4 text-left text-sm font-semibold">
+              Amount
+            </th>
+
+            <th className="px-6 py-4 text-left text-sm font-semibold">
+              Method
+            </th>
+
+            <th className="px-6 py-4 text-left text-sm font-semibold">
+              Date
+            </th>
+
+            <th className="px-6 py-4 text-center text-sm font-semibold">
+              Actions
+            </th>
           </tr>
         </thead>
 
@@ -68,7 +104,7 @@ export default async function PaymentTable({
           {payments.map((payment) => (
             <tr
               key={payment.id}
-              className="border-b hover:bg-muted/30"
+              className="border-b transition-colors hover:bg-muted/30"
             >
               <td className="px-6 py-4 font-medium">
                 {payment.member.firstName}{" "}
@@ -76,7 +112,7 @@ export default async function PaymentTable({
               </td>
 
               <td className="px-6 py-4 font-semibold text-green-600">
-                ₹{Number(payment.amount).toLocaleString()}
+                ₹{Number(payment.amount).toLocaleString("en-IN")}
               </td>
 
               <td className="px-6 py-4">

@@ -1,56 +1,86 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+
 import { toast } from "sonner";
 
-import { createPayment } from "@/actions/payment";
+import {
+  createPayment,
+  updatePayment,
+} from "@/actions/payment";
 
 import {
   PaymentInput,
   PaymentSchema,
 } from "@/lib/validations/payment";
 
-import {
-  Input,
-} from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
-import {
-  Button,
-} from "@/components/ui/button";
+interface Member {
+  id: string;
+  firstName: string;
+  lastName: string;
+}
+
+interface Payment {
+  id: string;
+  memberId: string;
+  amount: number;
+  paymentMethod: string;
+  notes: string | null;
+}
 
 interface Props {
-  members: {
-    id: string;
-    firstName: string;
-    lastName: string;
-  }[];
+  members: Member[];
+  payment?: Payment;
+  mode?: "create" | "edit";
 }
 
 export default function PaymentFormClient({
   members,
+  payment,
+  mode = "create",
 }: Props) {
   const router = useRouter();
 
+  const [loading, setLoading] = useState(false);
+
   const form = useForm<PaymentInput>({
     resolver: zodResolver(PaymentSchema),
+
+    defaultValues: {
+      memberId: payment?.memberId ?? "",
+      amount: payment?.amount ?? 0,
+      paymentMethod: payment?.paymentMethod ?? "",
+      notes: payment?.notes ?? "",
+    },
   });
 
-  async function onSubmit(
-    values: PaymentInput
-  ) {
-    const result =
-      await createPayment(values);
+  async function onSubmit(values: PaymentInput) {
+    setLoading(true);
 
-    if (result.success) {
-      toast.success("Payment recorded");
+    try {
+      const result =
+        mode === "edit" && payment
+          ? await updatePayment(payment.id, values)
+          : await createPayment(values);
+
+      if (!result.success) {
+        toast.error(result.message);
+        return;
+      }
+
+      toast.success(result.message);
 
       router.push("/dashboard/payments");
-
       router.refresh();
-    } else {
-      toast.error(result.message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -61,7 +91,7 @@ export default function PaymentFormClient({
     >
       <select
         {...form.register("memberId")}
-        className="w-full rounded-md border p-3"
+        className="h-11 w-full rounded-lg border bg-background px-3"
       >
         <option value="">
           Select Member
@@ -72,35 +102,42 @@ export default function PaymentFormClient({
             key={member.id}
             value={member.id}
           >
-            {member.firstName}{" "}
-            {member.lastName}
+            {member.firstName} {member.lastName}
           </option>
         ))}
       </select>
 
       <Input
         type="number"
+        step="0.01"
         placeholder="Amount"
-        {...form.register("amount")}
+        {...form.register("amount", {
+          valueAsNumber: true,
+        })}
       />
 
       <Input
         placeholder="Payment Method"
-        {...form.register(
-          "paymentMethod"
-        )}
+        {...form.register("paymentMethod")}
       />
 
       <Input
-        placeholder="Notes"
+        placeholder="Notes (Optional)"
         {...form.register("notes")}
       />
 
       <Button
         type="submit"
+        disabled={loading}
         className="w-full"
       >
-        Record Payment
+        {loading
+          ? mode === "edit"
+            ? "Updating..."
+            : "Recording..."
+          : mode === "edit"
+          ? "Update Payment"
+          : "Record Payment"}
       </Button>
     </form>
   );
