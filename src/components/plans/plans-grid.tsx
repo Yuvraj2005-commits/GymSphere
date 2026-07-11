@@ -1,32 +1,20 @@
-import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+
+import { prisma } from "@/lib/prisma";
+import { getCurrentOwner } from "@/lib/current-owner";
 
 import PlanCard from "./plan-card";
 
 export default async function PlansGrid() {
-  const session = await auth();
+  const owner = await getCurrentOwner();
 
-  if (!session?.user?.email) {
-    redirect("/login");
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session.user.email,
-    },
-    include: {
-      owner: true,
-    },
-  });
-
-  if (!user?.owner) {
+  if (!owner) {
     redirect("/dashboard/onboarding");
   }
 
   const plans = await prisma.membershipPlan.findMany({
     where: {
-      gymId: user.owner.gymId,
+      gymId: owner.gymId,
     },
     orderBy: {
       createdAt: "desc",
@@ -36,12 +24,10 @@ export default async function PlansGrid() {
   if (plans.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed p-12 text-center">
-        <h2 className="text-2xl font-semibold">
-          No Membership Plans Yet
-        </h2>
+        <h2 className="text-2xl font-semibold">No Membership Plans Yet</h2>
 
         <p className="mt-2 text-muted-foreground">
-          Create your first membership plan.
+          Create your first membership plan to get started.
         </p>
       </div>
     );
@@ -52,7 +38,10 @@ export default async function PlansGrid() {
       {plans.map((plan) => (
         <PlanCard
           key={plan.id}
-          plan={plan}
+          plan={{
+            ...plan,
+            price: Number(plan.price),
+          }}
         />
       ))}
     </div>

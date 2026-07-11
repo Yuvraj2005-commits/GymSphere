@@ -1,19 +1,21 @@
 "use server";
 
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-
 import { revalidatePath } from "next/cache";
+
+import { prisma } from "@/lib/prisma";
+import { getCurrentOwner } from "@/lib/current-owner";
 
 import {
   PlanInput,
   PlanSchema,
 } from "@/lib/validations/plan";
 
-export async function createPlan(data: PlanInput) {
-  const session = await auth();
+export async function createPlan(
+  data: PlanInput
+) {
+  const owner = await getCurrentOwner();
 
-  if (!session?.user?.email) {
+  if (!owner) {
     return {
       success: false,
       message: "Unauthorized",
@@ -25,33 +27,18 @@ export async function createPlan(data: PlanInput) {
   if (!parsed.success) {
     return {
       success: false,
-      message: "Invalid Data",
-    };
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session.user.email,
-    },
-    include: {
-      owner: true,
-    },
-  });
-
-  if (!user?.owner) {
-    return {
-      success: false,
-      message: "Owner not found",
+      message: "Invalid plan data.",
     };
   }
 
   await prisma.membershipPlan.create({
     data: {
-      gymId: user.owner.gymId,
+      gymId: owner.gymId,
 
       name: parsed.data.name,
 
-      description: parsed.data.description,
+      description:
+        parsed.data.description || null,
 
       durationDays: parsed.data.durationDays,
 
@@ -63,6 +50,109 @@ export async function createPlan(data: PlanInput) {
 
   return {
     success: true,
-    message: "Plan created successfully",
+    message: "Membership plan created successfully.",
+  };
+}
+
+export async function updatePlan(
+  id: string,
+  data: PlanInput
+) {
+  const owner = await getCurrentOwner();
+
+  if (!owner) {
+    return {
+      success: false,
+      message: "Unauthorized",
+    };
+  }
+
+  const parsed = PlanSchema.safeParse(data);
+
+  if (!parsed.success) {
+    return {
+      success: false,
+      message: "Invalid plan data.",
+    };
+  }
+
+  const plan =
+    await prisma.membershipPlan.findFirst({
+      where: {
+        id,
+        gymId: owner.gymId,
+      },
+    });
+
+  if (!plan) {
+    return {
+      success: false,
+      message: "Membership plan not found.",
+    };
+  }
+
+  await prisma.membershipPlan.update({
+    where: {
+      id,
+    },
+    data: {
+      name: parsed.data.name,
+
+      description:
+        parsed.data.description || null,
+
+      durationDays:
+        parsed.data.durationDays,
+
+      price: parsed.data.price,
+    },
+  });
+
+  revalidatePath("/dashboard/plans");
+
+  return {
+    success: true,
+    message: "Membership plan updated successfully.",
+  };
+}
+
+export async function deletePlan(
+  id: string
+) {
+  const owner = await getCurrentOwner();
+
+  if (!owner) {
+    return {
+      success: false,
+      message: "Unauthorized",
+    };
+  }
+
+  const plan =
+    await prisma.membershipPlan.findFirst({
+      where: {
+        id,
+        gymId: owner.gymId,
+      },
+    });
+
+  if (!plan) {
+    return {
+      success: false,
+      message: "Membership plan not found.",
+    };
+  }
+
+  await prisma.membershipPlan.delete({
+    where: {
+      id,
+    },
+  });
+
+  revalidatePath("/dashboard/plans");
+
+  return {
+    success: true,
+    message: "Membership plan deleted successfully.",
   };
 }

@@ -8,12 +8,12 @@ export default function NewPlanPage() {
           Create Membership Plan
         </h1>
 
-        <p className="text-muted-foreground mt-2">
-          Add a membership plan for your gym.
+        <p className="mt-2 text-muted-foreground">
+          Add a new membership plan for your gym.
         </p>
       </div>
 
-      <PlanForm />
+      <PlanForm mode="create" />
     </div>
   );
 }
