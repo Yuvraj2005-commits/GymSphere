@@ -38,9 +38,13 @@ export default function Navbar() {
 
         {/* Desktop Buttons */}
         <div className="hidden items-center gap-3 md:flex">
-          <Button variant="ghost">Login</Button>
+          <Button asChild variant="ghost">
+            <Link href="/login">Login</Link>
+          </Button>
 
-          <Button>Get Started</Button>
+          <Button asChild>
+            <Link href="/register">Get Started</Link>
+          </Button>
         </div>
 
         {/* Mobile Menu */}
@@ -63,12 +67,12 @@ export default function Navbar() {
                 </Link>
               ))}
 
-              <Button asChild variant="ghost">
-                <Link href="/login">Login</Link>
+              <Button asChild>
+                <Link href="/login">Get Started</Link>
               </Button>
 
               <Button asChild>
-                <Link href="/login">Get Started</Link>
+                <Link href="/register">Get Started</Link>
               </Button>
             </div>
           </SheetContent>
