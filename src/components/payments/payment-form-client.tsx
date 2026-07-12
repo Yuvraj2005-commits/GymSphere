@@ -14,6 +14,7 @@ import {
 } from "@/actions/payment";
 
 import {
+  PaymentFormInput,
   PaymentInput,
   PaymentSchema,
 } from "@/lib/validations/payment";
@@ -50,7 +51,7 @@ export default function PaymentFormClient({
 
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<PaymentInput>({
+  const form = useForm<PaymentFormInput>({
     resolver: zodResolver(PaymentSchema),
 
     defaultValues: {
@@ -61,14 +62,21 @@ export default function PaymentFormClient({
     },
   });
 
-  async function onSubmit(values: PaymentInput) {
+  async function onSubmit(
+    values: PaymentFormInput
+  ) {
     setLoading(true);
 
     try {
       const result =
         mode === "edit" && payment
-          ? await updatePayment(payment.id, values)
-          : await createPayment(values);
+          ? await updatePayment(
+              payment.id,
+              values as PaymentInput
+            )
+          : await createPayment(
+              values as PaymentInput
+            );
 
       if (!result.success) {
         toast.error(result.message);
@@ -111,9 +119,7 @@ export default function PaymentFormClient({
         type="number"
         step="0.01"
         placeholder="Amount"
-        {...form.register("amount", {
-          valueAsNumber: true,
-        })}
+        {...form.register("amount")}
       />
 
       <Input

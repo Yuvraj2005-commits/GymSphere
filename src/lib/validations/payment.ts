@@ -26,3 +26,4 @@ export const PaymentSchema = z.object({
 });
 
 export type PaymentInput = z.infer<typeof PaymentSchema>;
+export type PaymentFormInput = z.input<typeof PaymentSchema>;

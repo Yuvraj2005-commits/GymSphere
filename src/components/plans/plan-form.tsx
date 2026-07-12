@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 import { toast } from "sonner";
 
@@ -42,16 +43,20 @@ export default function PlanForm({
 
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<PlanInput>({
-    resolver: zodResolver(PlanSchema),
+  const form = useForm<
+  z.input<typeof PlanSchema>,
+  any,
+  z.output<typeof PlanSchema>
+>({
+  resolver: zodResolver(PlanSchema),
 
-    defaultValues: {
-      name: plan?.name ?? "",
-      description: plan?.description ?? "",
-      durationDays: plan?.durationDays ?? 30,
-      price: plan?.price ?? 0,
-    },
-  });
+  defaultValues: {
+    name: plan?.name ?? "",
+    description: plan?.description ?? "",
+    durationDays: plan?.durationDays ?? 30,
+    price: plan?.price ?? 0,
+  },
+})
 
   async function onSubmit(values: PlanInput) {
     setLoading(true);

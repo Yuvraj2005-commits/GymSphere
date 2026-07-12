@@ -56,3 +56,4 @@ export const MemberSchema = z.object({
 });
 
 export type MemberInput = z.infer<typeof MemberSchema>;
+export type MemberFormInput = z.input<typeof MemberSchema>;

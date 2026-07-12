@@ -26,3 +26,4 @@ export const PlanSchema = z.object({
 });
 
 export type PlanInput = z.infer<typeof PlanSchema>;
+export type PlanFormInput = z.input<typeof PlanSchema>;
