@@ -25,7 +25,7 @@ GymSphere is a modern Gym Management SaaS designed to simplify daily gym operati
 ### Landing Page
 
 <p align="center">
-<img src="./screenshots/landing.png" width="100%">
+<img src="./Screenshots/landing.png" width="100%">
 </p>
 
 ---
@@ -33,7 +33,7 @@ GymSphere is a modern Gym Management SaaS designed to simplify daily gym operati
 ### Login
 
 <p align="center">
-<img src="./screenshots/login.png" width="100%">
+<img src="./Screenshots/login.png" width="100%">
 </p>
 
 ---
@@ -41,15 +41,7 @@ GymSphere is a modern Gym Management SaaS designed to simplify daily gym operati
 ### Register
 
 <p align="center">
-<img src="./screenshots/register.png" width="100%">
-</p>
-
----
-
-### Email Verification
-
-<p align="center">
-<img src="./screenshots/verify-email.png" width="100%">
+<img src="./Screenshots/register.png" width="100%">
 </p>
 
 ---
@@ -57,7 +49,7 @@ GymSphere is a modern Gym Management SaaS designed to simplify daily gym operati
 ### Dashboard
 
 <p align="center">
-<img src="./screenshots/dashboard.png" width="100%">
+<img src="./Screenshots/dashboard.png" width="100%">
 </p>
 
 ---
@@ -65,15 +57,7 @@ GymSphere is a modern Gym Management SaaS designed to simplify daily gym operati
 ### Members
 
 <p align="center">
-<img src="./screenshots/members.png" width="100%">
-</p>
-
----
-
-### Add Member
-
-<p align="center">
-<img src="./screenshots/add-member.png" width="100%">
+<img src="./Screenshots/members.png" width="100%">
 </p>
 
 ---
@@ -81,15 +65,7 @@ GymSphere is a modern Gym Management SaaS designed to simplify daily gym operati
 ### Membership Plans
 
 <p align="center">
-<img src="./screenshots/plans.png" width="100%">
-</p>
-
----
-
-### Create Plan
-
-<p align="center">
-<img src="./screenshots/create-plan.png" width="100%">
+<img src="./Screenshots/plans.png" width="100%">
 </p>
 
 ---
@@ -97,7 +73,7 @@ GymSphere is a modern Gym Management SaaS designed to simplify daily gym operati
 ### Attendance
 
 <p align="center">
-<img src="./screenshots/attendance.png" width="100%">
+<img src="./Screenshots/attendance.png" width="100%">
 </p>
 
 ---
@@ -105,15 +81,7 @@ GymSphere is a modern Gym Management SaaS designed to simplify daily gym operati
 ### Payments
 
 <p align="center">
-<img src="./screenshots/payments.png" width="100%">
-</p>
-
----
-
-### Record Payment
-
-<p align="center">
-<img src="./screenshots/record-payment.png" width="100%">
+<img src="./Screenshots/payments.png" width="100%">
 </p>
 
 ---
@@ -121,23 +89,7 @@ GymSphere is a modern Gym Management SaaS designed to simplify daily gym operati
 ### Trainer Management
 
 <p align="center">
-<img src="./screenshots/trainers.png" width="100%">
-</p>
-
----
-
-### Forgot Password
-
-<p align="center">
-<img src="./screenshots/forgot-password.png" width="100%">
-</p>
-
----
-
-### Reset Password
-
-<p align="center">
-<img src="./screenshots/reset-password.png" width="100%">
+<img src="./Screenshots/trainer.png" width="100%">
 </p>
 
 ---
