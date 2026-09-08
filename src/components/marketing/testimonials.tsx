@@ -55,7 +55,7 @@ export default function Testimonials() {
               </div>
 
               <p className="text-muted-foreground">
-                "{item.review}"
+                &quot;{item.review}&quot;
               </p>
 
               <div className="mt-8">

@@ -96,7 +96,7 @@ export default function ResetPasswordEmail({
               fontSize: "14px",
             }}
           >
-            If you didn't request a password reset,
+            If you didn&apos;t request a password reset,
             you can safely ignore this email.
           </Text>
 

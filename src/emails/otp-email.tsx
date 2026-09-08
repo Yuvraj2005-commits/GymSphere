@@ -74,7 +74,7 @@ export default function OTPEmail({
           </Text>
 
           <Text>
-            If you didn't request this, you can
+            If you didn&apos;t request this, you can
             safely ignore this email.
           </Text>
         </Container>

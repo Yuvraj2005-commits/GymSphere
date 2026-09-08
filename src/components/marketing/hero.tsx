@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GradientBadge from "@/components/common/gradient-badge";
 
@@ -78,7 +78,7 @@ export default function Hero() {
             </div>
 
             <div className="mb-6 flex justify-between">
-              <span>Today's Check-ins</span>
+              <span>Today&apos;s Check-ins</span>
               <span className="font-bold">182</span>
             </div>
 

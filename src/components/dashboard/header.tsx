@@ -56,7 +56,7 @@ export default function Header() {
                 </p>
 
                 <p className="mt-1 text-sm text-muted-foreground">
-                  You're all caught up.
+                  You&apos;re all caught up.
                 </p>
               </div>
             </div>

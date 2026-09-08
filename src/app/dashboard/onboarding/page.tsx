@@ -9,7 +9,7 @@ export default function OnboardingPage() {
         </h1>
 
         <p className="text-muted-foreground mt-2">
-          Let's create your gym before you start managing members.
+          Let&apos;s create your gym before you start managing members.
         </p>
       </div>
 

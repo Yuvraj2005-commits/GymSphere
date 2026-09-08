@@ -45,7 +45,7 @@ export default function PlanForm({
 
   const form = useForm<
   z.input<typeof PlanSchema>,
-  any,
+  unknown,
   z.output<typeof PlanSchema>
 >({
   resolver: zodResolver(PlanSchema),

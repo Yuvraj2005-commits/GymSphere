@@ -39,7 +39,7 @@ export default async function PaymentStats() {
 
       <div className="rounded-xl border bg-background p-6">
         <p className="text-sm text-muted-foreground">
-          Today's Revenue
+          Today&apos;s Revenue
         </p>
 
         <h2 className="mt-2 text-3xl font-bold text-green-600">

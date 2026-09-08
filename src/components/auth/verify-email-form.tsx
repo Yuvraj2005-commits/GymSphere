@@ -56,7 +56,7 @@ export default function VerifyEmailForm({
         </h1>
 
         <p className="mt-2 text-muted-foreground">
-          We've sent a 6-digit verification code to
+          We&apos;ve sent a 6-digit verification code to
         </p>
 
         <p className="mt-1 font-medium">

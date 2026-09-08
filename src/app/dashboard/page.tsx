@@ -1,10 +1,3 @@
-import {
-  Users,
-  Wallet,
-  ClipboardList,
-  Activity,
-} from "lucide-react";
-
 import { getDashboardStats } from "@/actions/dashboard";
 
 import StatsCard from "@/components/dashboard/stats-cards";
@@ -14,7 +7,7 @@ import AIInsights from "@/components/dashboard/ai-insights";
 import QuickActions from "@/components/dashboard/quick-actions";
 
 export default async function DashboardPage() {
-  const stats = await getDashboardStats();
+  await getDashboardStats();
 
   return (
     <div className="space-y-8">
